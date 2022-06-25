@@ -13,6 +13,7 @@ import { DigitalGauge } from '@/Components'
 import { useTheme } from '@/Hooks'
 import { useLazyFetchOneQuery } from '@/Services/modules/users'
 import { changeTheme, ThemeState } from '@/Store/Theme'
+import AnalogGauge from '@/Components/AnalogGauge'
 
 const ExampleContainer = () => {
   const { t } = useTranslation()
@@ -41,6 +42,8 @@ const ExampleContainer = () => {
       ]}
     >
       <DigitalGauge value={32.22} unit={'V'} />
+
+      <AnalogGauge />
     </ScrollView>
   )
 }
