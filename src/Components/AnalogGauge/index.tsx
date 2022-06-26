@@ -103,13 +103,6 @@ export default function Donut({
           strokeLinecap="round"
           strokeOpacity=".9"
         />
-        {/* <AnimatedCircle
-          stroke="url(#grad)"
-          fill="none"
-          strokeDasharray={`${circumference}, ${circumference}`}
-          strokeDashoffset={offset}
-          strokeWidth={10}
-        /> */}
       </Svg>
       <AnimatedTextInput
         ref={inputRef}
