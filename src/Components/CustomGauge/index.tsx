@@ -115,39 +115,46 @@ export default function CustomGauge({
             }}
           >
             <G transform={`translate(-${innerRadius} -${innerRadius})`}>
-              <Circle cx={innerRadius} cy={innerRadius} r="10" fill="#000" />
+              <Circle
+                cx={innerRadius}
+                cy={innerRadius}
+                r={radius / 13}
+                fill="#000"
+              />
               <Path
-                d={`M ${innerRadius - 3} ${innerRadius + 3} L ${
-                  innerRadius / 5
-                } ${innerRadius} L ${innerRadius + 3} ${innerRadius - 3} z`}
+                d={`M ${innerRadius - radius / 40} ${
+                  innerRadius + radius / 40
+                } L ${innerRadius / (radius / 30)} ${innerRadius} L ${
+                  innerRadius + radius / 40
+                } ${innerRadius - radius / 40} z`}
                 fill="#000"
                 stroke="#111"
               />
               <Path
-                d={`M ${innerRadius} ${innerRadius - 2} L ${innerRadius + 30} ${
-                  innerRadius - 2
-                } L ${innerRadius + 30} ${innerRadius + 2} L ${innerRadius} ${
-                  innerRadius + 2
-                } z`}
+                d={`M ${innerRadius} ${innerRadius - radius / 50} L ${
+                  innerRadius + radius / 5
+                } ${innerRadius - radius / 50} L ${innerRadius + radius / 5} ${
+                  innerRadius + radius / 50
+                } L ${innerRadius} ${innerRadius + radius / 50} z`}
                 fill="#000"
                 stroke="#111"
               />
               <Circle
-                cx={innerRadius + 30}
+                cx={innerRadius + radius / 5}
                 cy={innerRadius}
-                r="7"
+                r={radius / 18}
                 fill="#000"
               />
               <Circle
-                cx={innerRadius + 30}
+                cx={innerRadius + radius / 5}
                 cy={innerRadius}
-                r="3.5"
+                r={radius / 40}
                 fill="#fff"
               />
               <Circle
                 cx={innerRadius}
                 cy={innerRadius}
-                r="4"
+                r={radius / 30}
                 stroke="#999"
                 fill="#ccc"
               />
