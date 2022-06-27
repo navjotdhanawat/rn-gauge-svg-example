@@ -15,12 +15,13 @@ import { useLazyFetchOneQuery } from '@/Services/modules/users'
 import { changeTheme, ThemeState } from '@/Store/Theme'
 import AnalogGauge from '@/Components/AnalogGauge'
 import CustomGauge from '@/Components/CustomGauge'
+import Test from '@/Components/Test'
 
 const ExampleContainer = () => {
   const { t } = useTranslation()
   const { Common, Fonts, Gutters, Layout } = useTheme()
   const dispatch = useDispatch()
-  const [percentage, setPercentage] = useState(0)
+  const [percentage, setPercentage] = useState(40)
 
   const [userId, setUserId] = useState('9')
   const [fetchOne, { data, isSuccess, isLoading, isFetching, error }] =
@@ -42,9 +43,9 @@ const ExampleContainer = () => {
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
-  //     console.log('This will run every second!')
+  //     // console.log('This will run every second!')
   //     setPercentage(getRandomIntInclusive(1, 100))
-  //   }, 1000)
+  //   }, 10000)
   //   return () => clearInterval(interval)
   // }, [])
 
@@ -59,8 +60,9 @@ const ExampleContainer = () => {
     >
       <DigitalGauge value={32.22} unit={'V'} />
 
-      <AnalogGauge />
+      {/* <AnalogGauge /> */}
       <CustomGauge percentage={percentage} />
+      {/* <Test /> */}
     </ScrollView>
   )
 }

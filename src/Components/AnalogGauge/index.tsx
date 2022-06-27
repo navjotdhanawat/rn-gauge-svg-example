@@ -19,11 +19,11 @@ import Svg, {
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
 
-export default function Donut({
+export default function AnalogGauge({
   percentage = 75,
   radius = 40,
   strokeWidth = 10,
-  duration = 1000,
+  duration = 5000,
   max = 10,
 }) {
   const animated = React.useRef(new Animated.Value(0)).current
@@ -32,9 +32,13 @@ export default function Donut({
   const innerRadius = radius - strokeWidth
   const circumference = innerRadius * 2 * Math.PI
 
+  const arc = circumference * 0.65
+  const dashArray = `${arc} ${circumference}`
+  const transform = `rotate(100, ${radius}, ${radius})`
+
   const animation = (toValue: any) => {
     return Animated.timing(animated, {
-      delay: 1000,
+      delay: 5000,
       toValue,
       duration,
       useNativeDriver: true,
@@ -43,10 +47,6 @@ export default function Donut({
       animation(toValue === 0 ? percentage : 0)
     })
   }
-
-  const arc = circumference * 0.65
-  const dashArray = `${arc} ${circumference}`
-  const transform = `rotate(100, ${radius}, ${radius})`
 
   React.useEffect(() => {
     animation(percentage)
