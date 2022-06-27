@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
   Easing,
   TextInput,
@@ -22,148 +22,139 @@ const AnimatedG = Animated.createAnimatedComponent(G)
 
 export default function CustomGauge({
   radius = 100,
-  strokeWidth = 10,
-  percentage = 0,
-  max = 10,
+  strokeWidth = 20,
+  percentage = 100,
+  width = 200,
+  height = 200,
+  scale = 1,
 }) {
-  const center = radius / 2
-  const circleRef = React.useRef()
-  const needleRef = React.useRef()
   const innerRadius = radius - strokeWidth
   const circumference = innerRadius * 2 * Math.PI
+  const halfCircle = radius + strokeWidth
 
   const arc = circumference * 0.5
   const dashArray = `${arc} ${circumference}`
   const transform = `rotate(180, ${radius}, ${radius})`
 
-  const offsetP = arc - (percentage / 100) * arc
-  const rotation = percentage * 1.8
+  const [rotateAnimation] = useState(new Animated.Value(0))
+  const [circleAnimation] = useState(new Animated.Value(283))
 
-  const animated = React.useRef(new Animated.Value(0)).current
-
-  const animation = (toValue: any) => {
-    return Animated.timing(animated, {
-      toValue,
-      duration: 1000,
-      useNativeDriver: true,
-      easing: Easing.out(Easing.ease),
-    }).start(() => {
-      console.log('-----')
-      // animation(toValue === 0 ? percentage : 0)
-    })
-  }
-
-  React.useEffect(() => {
-    animation(percentage)
-    console.log(percentage)
-    animated.addListener(v => {
-      const maxPerc = (100 * v.value) / max
-      const strokeDashoffset = arc - (Math.round(v.value) / 100) * arc
-      if (needleRef.current) {
-        const rotation = percentage * 1.8
-        needleRef.current.setNativeProps({
-          // transform: [{ rotation: '100 100 100' }],
-        })
-      }
-      if (circleRef?.current) {
-        circleRef.current.setNativeProps({
-          strokeDashoffset,
-        })
-      }
-    })
-
-    return () => {
-      animated.removeAllListeners()
-    }
-  }, [percentage])
-
-  const [rotateAnimation, setRotateAnimation] = useState(new Animated.Value(0))
-  React.useEffect(() => {
-    Animated.timing(rotateAnimation, {
-      toValue: 1,
+  useMemo(() => {
+    Animated.timing(circleAnimation, {
+      toValue: arc - (percentage / 100) * arc,
       duration: 800,
       useNativeDriver: true,
-    }).start()
+      easing: Easing.out(Easing.ease),
+    }).start(() => {})
+
+    Animated.timing(rotateAnimation, {
+      toValue: percentage * 1.8,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {})
+  }, [percentage])
+
+  const [interpolateRotating, setInterpolateRotating] = useState({})
+  const [interpolateOffset, setInterpolateOffset] = useState(0)
+  useEffect(() => {
+    const interpolateOffset = circleAnimation.interpolate({
+      inputRange: [0, 180],
+      outputRange: [0, 180],
+    })
+    setInterpolateOffset(interpolateOffset)
+    const interpolateRotating = rotateAnimation.interpolate({
+      inputRange: [0, 180],
+      outputRange: ['0deg', `180deg`],
+    })
+    setInterpolateRotating(interpolateRotating)
   }, [])
 
-  const interpolateRotating = rotateAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  })
-  const [pivotX, pivotY] = [100, 100]
-
-  const [offset, setOffset] = useState(0)
-  const offsetAndroid = offset
   return (
-    <View style={{ width: 300, height: 300 }}>
-      <Svg width="100%" height="100%">
-        <G>
+    <View style={{ width: radius * 2, height: radius * 2 }}>
+      <Svg
+        height={radius * 2}
+        width={radius * 2}
+        viewBox={`0 0 ${halfCircle * 2} ${halfCircle * 2}`}
+      >
+        <G scale={scale}>
           <Circle
             cx={radius}
             cy={radius}
             r={innerRadius}
             fill="transparent"
             stroke="gray"
-            strokeWidth={10}
+            strokeWidth={strokeWidth}
             strokeDasharray={dashArray}
             transform={transform}
             strokeLinecap="round"
           />
-          <Circle
-            ref={circleRef}
+          <AnimatedCircle
             cx={radius}
             cy={radius}
             r={innerRadius}
             fill="transparent"
             stroke="red"
-            strokeWidth={10}
+            strokeWidth={strokeWidth}
             strokeDasharray={dashArray}
-            strokeDashoffset={offsetP}
+            strokeDashoffset={interpolateOffset}
             transform={transform}
             strokeLinecap="round"
             strokeOpacity=".9"
           />
         </G>
-        <G transform={`translate(${pivotX}, ${pivotY})`}>
+        <G scale={scale} transform={`translate(${radius}, ${radius})`}>
           <AnimatedG
             style={{
               transform: [
-                { translateX: -offsetAndroid },
+                // { translateX: -offsetAndroid },
                 {
                   rotate: interpolateRotating,
                 },
-                { translateX: offsetAndroid },
+                // { translateX: offsetAndroid },
               ],
             }}
           >
-            <G transform={`translate(-${pivotX} -${pivotY})`}>
-              <Circle cx={radius} cy={radius} r="10" fill="#000" />
+            <G transform={`translate(-${innerRadius} -${innerRadius})`}>
+              <Circle cx={innerRadius} cy={innerRadius} r="10" fill="#000" />
               <Path
-                d={`M ${radius - 3} ${radius + 3} L ${radius / 5} ${radius} L ${
-                  radius + 3
-                } ${radius - 3} z`}
+                d={`M ${innerRadius - 3} ${innerRadius + 3} L ${
+                  innerRadius / 5
+                } ${innerRadius} L ${innerRadius + 3} ${innerRadius - 3} z`}
                 fill="#000"
                 stroke="#111"
               />
               <Path
-                d={`M ${radius} ${radius - 2} L ${radius + 30} ${
-                  radius - 2
-                } L ${radius + 30} ${radius + 2} L ${radius} ${radius + 2} z`}
+                d={`M ${innerRadius} ${innerRadius - 2} L ${innerRadius + 30} ${
+                  innerRadius - 2
+                } L ${innerRadius + 30} ${innerRadius + 2} L ${innerRadius} ${
+                  innerRadius + 2
+                } z`}
                 fill="#000"
                 stroke="#111"
               />
-              <Circle cx={radius + 30} cy={radius} r="7" fill="#000" />
-              <Circle cx={radius + 30} cy={radius} r="3.5" fill="#fff" />
-              <Circle cx={radius} cy={radius} r="4" stroke="#999" fill="#ccc" />
+              <Circle
+                cx={innerRadius + 30}
+                cy={innerRadius}
+                r="7"
+                fill="#000"
+              />
+              <Circle
+                cx={innerRadius + 30}
+                cy={innerRadius}
+                r="3.5"
+                fill="#fff"
+              />
+              <Circle
+                cx={innerRadius}
+                cy={innerRadius}
+                r="4"
+                stroke="#999"
+                fill="#ccc"
+              />
             </G>
           </AnimatedG>
         </G>
       </Svg>
-      <Text>{percentage}: </Text>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  text: { fontWeight: '900', textAlign: 'center' },
-})

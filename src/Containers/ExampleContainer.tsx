@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Button,
 } from 'react-native'
 import { useDispatch } from 'react-redux'
 import { useTranslation } from 'react-i18next'
@@ -44,8 +45,8 @@ const ExampleContainer = () => {
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     // console.log('This will run every second!')
-  //     setPercentage(getRandomIntInclusive(1, 100))
-  //   }, 10000)
+  //     setPercentage(getRandomIntInclusive(50, 100))
+  //   }, 2000)
   //   return () => clearInterval(interval)
   // }, [])
 
@@ -59,9 +60,11 @@ const ExampleContainer = () => {
       ]}
     >
       <DigitalGauge value={32.22} unit={'V'} />
+      <Button title="+" onPress={() => setPercentage(percentage + 10)} />
+      <Button title="-" onPress={() => setPercentage(percentage - 10)} />
 
       {/* <AnalogGauge /> */}
-      <CustomGauge percentage={percentage} />
+      <CustomGauge radius={200} percentage={percentage} />
       {/* <Test /> */}
     </ScrollView>
   )
