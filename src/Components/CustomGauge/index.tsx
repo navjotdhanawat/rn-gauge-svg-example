@@ -1,21 +1,6 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import {
-  Easing,
-  TextInput,
-  Animated,
-  Text,
-  View,
-  StyleSheet,
-} from 'react-native'
-import Svg, {
-  G,
-  Circle,
-  Rect,
-  Defs,
-  LinearGradient,
-  Stop,
-  Path,
-} from 'react-native-svg'
+import React, { useState, useEffect, useMemo } from 'react'
+import { Easing, Animated, View } from 'react-native'
+import Svg, { G, Circle, Path } from 'react-native-svg'
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 const AnimatedG = Animated.createAnimatedComponent(G)
@@ -24,8 +9,6 @@ export default function CustomGauge({
   radius = 100,
   strokeWidth = 20,
   percentage = 100,
-  width = 200,
-  height = 200,
   scale = 1,
 }) {
   const innerRadius = radius - strokeWidth

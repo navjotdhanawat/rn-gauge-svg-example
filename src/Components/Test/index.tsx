@@ -1,111 +1,150 @@
-import React, { Component, useEffect, useState } from 'react'
-import { Text, View, StyleSheet, Animated, Platform } from 'react-native'
-import { Svg, Path, Rect, G, Circle } from 'react-native-svg'
+import React, { useState, useEffect, useMemo } from 'react'
+import { Easing, Animated, View } from 'react-native'
+import Svg, { G, Circle, Path } from 'react-native-svg'
 
+const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 const AnimatedG = Animated.createAnimatedComponent(G)
 
 export default function Test({
   radius = 100,
-  strokeWidth = 10,
-  percentage = 0,
-  max = 10,
+  strokeWidth = 20,
+  percentage = 100,
+  scale = 1,
 }) {
-  const rotation = React.useRef(new Animated.Value(0)).current
+  const innerRadius = radius - strokeWidth
+  const circumference = innerRadius * 2 * Math.PI
+  const halfCircle = radius + strokeWidth
 
-  const [offset, setOffset] = useState(0)
+  const arc = circumference * 0.5
+  const dashArray = `${arc} ${circumference}`
+  const transform = `rotate(180, ${radius}, ${radius})`
 
+  const [rotateAnimation] = useState(new Animated.Value(0))
+  const [circleAnimation] = useState(new Animated.Value(283))
+
+  useMemo(() => {
+    Animated.timing(circleAnimation, {
+      toValue: arc - (percentage / 100) * arc,
+      duration: 800,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.ease),
+    }).start(() => {})
+
+    Animated.timing(rotateAnimation, {
+      toValue: percentage * 1.8,
+      duration: 800,
+      useNativeDriver: true,
+    }).start(() => {})
+  }, [percentage])
+
+  const [interpolateRotating, setInterpolateRotating] = useState({})
+  const [interpolateOffset, setInterpolateOffset] = useState(0)
   useEffect(() => {
-    Animated.loop(
-      Animated.timing(rotation, {
-        useNativeDriver: true,
-        duration: 3000,
-        toValue: 1,
-      }),
-    ).start()
+    const interpolateOffset = circleAnimation.interpolate({
+      inputRange: [0, 180],
+      outputRange: [0, 180],
+    })
+    setInterpolateOffset(interpolateOffset)
+    const interpolateRotating = rotateAnimation.interpolate({
+      inputRange: [0, 180],
+      outputRange: ['0deg', `180deg`],
+    })
+    setInterpolateRotating(interpolateRotating)
   }, [])
 
-  const offsetAndroid = offset
-  const [pivotX, pivotY] = [100, 100]
-
   return (
-    <View style={{ width: 300, height: 300 }}>
+    <View style={{ width: radius * 2, height: radius * 2 }}>
       <Svg
-        width="100%"
-        height="100%"
-        // onLayout={this.onLayout}
-        // viewBox={`0 0 50 50`}
+        height={radius * 2}
+        width={radius * 2}
+        viewBox={`0 0 ${halfCircle * 2} ${halfCircle * 2}`}
       >
-        {/* <Rect width="50" height="50" /> */}
-        <G transform={`translate(${pivotX}, ${pivotY})`}>
-          <AnimatedG
-            style={{
-              transform: [
-                { translateX: -offsetAndroid },
-                {
-                  rotate: rotation.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0deg', '360deg'], // I would like to set pivot point at 25 25
-                  }),
-                },
-                { translateX: offsetAndroid },
-              ],
-            }}
-          >
-            <G transform={`translate(-${pivotX} -${pivotY})`}>
-              <Circle cx={radius} cy={radius} r="10" fill="#000" />
-              <Path
-                d={`M ${radius - 3} ${radius + 3} L ${radius / 5} ${radius} L ${
-                  radius + 3
-                } ${radius - 3} z`}
-                fill="#000"
-                stroke="#111"
-              />
-              <Path
-                d={`M ${radius} ${radius - 2} L ${radius + 30} ${
-                  radius - 2
-                } L ${radius + 30} ${radius + 2} L ${radius} ${radius + 2} z`}
-                fill="#000"
-                stroke="#111"
-              />
-              <Circle cx={radius + 30} cy={radius} r="7" fill="#000" />
-              <Circle cx={radius + 30} cy={radius} r="3.5" fill="#fff" />
-              <Circle cx={radius} cy={radius} r="4" stroke="#999" fill="#ccc" />
-            </G>
-          </AnimatedG>
+        <G scale={scale}>
+          <Circle
+            cx={radius}
+            cy={radius}
+            r={innerRadius}
+            fill="transparent"
+            stroke="gray"
+            strokeWidth={strokeWidth}
+            strokeDasharray={dashArray}
+            transform={transform}
+            strokeLinecap="round"
+          />
+          <AnimatedCircle
+            cx={radius}
+            cy={radius}
+            r={innerRadius}
+            fill="transparent"
+            stroke="red"
+            strokeWidth={strokeWidth}
+            strokeDasharray={dashArray}
+            strokeDashoffset={interpolateOffset}
+            transform={transform}
+            strokeLinecap="round"
+            strokeOpacity=".9"
+          />
         </G>
-        <G transform={`translate(${pivotX}, ${pivotY})`}>
-          <Circle r="5" fill="black" />
+        <G scale={scale} transform={`translate(${radius}, ${radius})`}>
           <AnimatedG
             style={{
               transform: [
                 // { translateX: -offsetAndroid },
                 {
-                  rotate: rotation.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: ['0deg', '360deg'], // I would like to set pivot point at 25 25
-                  }),
+                  rotate: interpolateRotating,
                 },
                 // { translateX: offsetAndroid },
               ],
             }}
           >
-            <Path
-              fill="#000"
-              d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z"
-              transform={`translate(-${pivotX} -${pivotY})`}
-            />
+            <G transform={`translate(-${innerRadius} -${innerRadius})`}>
+              <Circle
+                cx={innerRadius}
+                cy={innerRadius}
+                r={radius / 13}
+                fill="#000"
+              />
+              <Path
+                d={`M ${innerRadius - radius / 40} ${
+                  innerRadius + radius / 40
+                } L ${innerRadius / (radius / 30)} ${innerRadius} L ${
+                  innerRadius + radius / 40
+                } ${innerRadius - radius / 40} z`}
+                fill="#000"
+                stroke="#111"
+              />
+              <Path
+                d={`M ${innerRadius} ${innerRadius - radius / 50} L ${
+                  innerRadius + radius / 5
+                } ${innerRadius - radius / 50} L ${innerRadius + radius / 5} ${
+                  innerRadius + radius / 50
+                } L ${innerRadius} ${innerRadius + radius / 50} z`}
+                fill="#000"
+                stroke="#111"
+              />
+              <Circle
+                cx={innerRadius + radius / 5}
+                cy={innerRadius}
+                r={radius / 18}
+                fill="#000"
+              />
+              <Circle
+                cx={innerRadius + radius / 5}
+                cy={innerRadius}
+                r={radius / 40}
+                fill="#fff"
+              />
+              <Circle
+                cx={innerRadius}
+                cy={innerRadius}
+                r={radius / 30}
+                stroke="#999"
+                fill="#ccc"
+              />
+            </G>
           </AnimatedG>
         </G>
       </Svg>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-})

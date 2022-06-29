@@ -60,12 +60,12 @@ const ExampleContainer = () => {
       ]}
     >
       <DigitalGauge value={32.22} unit={'V'} />
-      <Button title="+" onPress={() => setPercentage(percentage + 10)} />
-      <Button title="-" onPress={() => setPercentage(percentage - 10)} />
+      <Button title="+" onPress={() => setPercentage(percentage + 1)} />
+      <Button title="-" onPress={() => setPercentage(percentage - 1)} />
 
       {/* <AnalogGauge /> */}
-      <CustomGauge radius={200} percentage={percentage} />
-      {/* <Test /> */}
+      <CustomGauge radius={100} strokeWidth={20} percentage={percentage} />
+      <Test radius={200} strokeWidth={20} percentage={percentage} />
     </ScrollView>
   )
 }
