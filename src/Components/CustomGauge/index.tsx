@@ -53,11 +53,11 @@ export default function CustomGauge({
   }, [])
 
   return (
-    <View style={{ width: radius * 2, height: radius * 2 }}>
+    <View style={{ aspectRatio: 1 }}>
       <Svg
-        height={radius * 2}
-        width={radius * 2}
-        viewBox={`0 0 ${halfCircle * 2} ${halfCircle * 2}`}
+        height="100%"
+        width="100%"
+        viewBox={`0 0 ${radius * 2} ${radius * 2}`}
       >
         <G scale={scale}>
           <Circle
