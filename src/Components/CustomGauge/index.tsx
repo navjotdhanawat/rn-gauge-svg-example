@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Easing, Animated, View } from 'react-native'
 import Svg, { G, Circle, Path } from 'react-native-svg'
+import Needle from '../Needle'
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 const AnimatedG = Animated.createAnimatedComponent(G)
 
 export default function CustomGauge({
-  radius = 100,
-  strokeWidth = 20,
+  radius = 200,
+  strokeWidth = 30,
   percentage = 100,
   scale = 1,
 }) {
@@ -53,13 +54,9 @@ export default function CustomGauge({
   }, [])
 
   return (
-    <View style={{ aspectRatio: 1 }}>
-      <Svg
-        height="100%"
-        width="100%"
-        viewBox={`0 0 ${radius * 2} ${radius * 2}`}
-      >
-        <G scale={scale}>
+    <View style={{ aspectRatio: 1, backgroundColor: 'green' }}>
+      <Svg height="100%" width="100%" viewBox={`0 0 400 400`}>
+        <G>
           <Circle
             cx={radius}
             cy={radius}
@@ -85,65 +82,11 @@ export default function CustomGauge({
             strokeOpacity=".9"
           />
         </G>
-        <G scale={scale} transform={`translate(${radius}, ${radius})`}>
-          <AnimatedG
-            style={{
-              transform: [
-                // { translateX: -offsetAndroid },
-                {
-                  rotate: interpolateRotating,
-                },
-                // { translateX: offsetAndroid },
-              ],
-            }}
-          >
-            <G transform={`translate(-${innerRadius} -${innerRadius})`}>
-              <Circle
-                cx={innerRadius}
-                cy={innerRadius}
-                r={radius / 13}
-                fill="#000"
-              />
-              <Path
-                d={`M ${innerRadius - radius / 40} ${
-                  innerRadius + radius / 40
-                } L ${innerRadius / (radius / 30)} ${innerRadius} L ${
-                  innerRadius + radius / 40
-                } ${innerRadius - radius / 40} z`}
-                fill="#000"
-                stroke="#111"
-              />
-              <Path
-                d={`M ${innerRadius} ${innerRadius - radius / 50} L ${
-                  innerRadius + radius / 5
-                } ${innerRadius - radius / 50} L ${innerRadius + radius / 5} ${
-                  innerRadius + radius / 50
-                } L ${innerRadius} ${innerRadius + radius / 50} z`}
-                fill="#000"
-                stroke="#111"
-              />
-              <Circle
-                cx={innerRadius + radius / 5}
-                cy={innerRadius}
-                r={radius / 18}
-                fill="#000"
-              />
-              <Circle
-                cx={innerRadius + radius / 5}
-                cy={innerRadius}
-                r={radius / 40}
-                fill="#fff"
-              />
-              <Circle
-                cx={innerRadius}
-                cy={innerRadius}
-                r={radius / 30}
-                stroke="#999"
-                fill="#ccc"
-              />
-            </G>
-          </AnimatedG>
-        </G>
+        <Needle
+          radius={radius}
+          interpolateRotating={interpolateRotating}
+          innerRadius={innerRadius}
+        />
       </Svg>
     </View>
   )

@@ -59,13 +59,33 @@ const ExampleContainer = () => {
         Gutters.smallHPadding,
       ]}
     >
-      <DigitalGauge value={32.22} unit={'V'} />
-      <Button title="+" onPress={() => setPercentage(percentage + 1)} />
-      <Button title="-" onPress={() => setPercentage(percentage - 1)} />
+      <DigitalGauge value={percentage} unit={'V'} />
+      <Button title="+" onPress={() => setPercentage(percentage + 10)} />
+      <Button title="-" onPress={() => setPercentage(percentage - 10)} />
 
       {/* <AnalogGauge /> */}
-      <CustomGauge radius={100} strokeWidth={20} percentage={percentage} />
-      <Test radius={200} strokeWidth={20} percentage={percentage} />
+      {/* <CustomGauge radius={100} strokeWidth={20} percentage={percentage} /> */}
+      <View
+        style={{
+          width: 300,
+          // height: 300,
+          justifyContent: 'space-around',
+        }}
+      >
+        <CustomGauge percentage={percentage} />
+      </View>
+
+      <View
+        style={{
+          width: 300,
+          // height: 400,
+          justifyContent: 'space-around',
+        }}
+      >
+        <Test percentage={percentage} />
+      </View>
+
+      {/* <Test radius={10} strokeWidth={10} percentage={percentage} /> */}
     </ScrollView>
   )
 }
